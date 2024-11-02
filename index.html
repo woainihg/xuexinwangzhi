@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Navigation with Progress</title>
+    <style>
+        .image-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px; /* 根据需要调整 */
+            margin: auto;
+        }
+        .image {
+            width: 100%;
+            display: none;
+        }
+        .clickable-area {
+            position: absolute;
+            cursor: pointer;
+          /* background-color: rgba(0, 0, 0, 0.2); *//* 20% 透明背景色，用于测试 */
+        }
+       /* 第一张图片的点击区域样式 */
+        #clickable1-top-left {
+            top: 0;
+            left: 0;
+            width: 40%; /* 宽度的五分之二 */
+            height: 20%; /* 高度的五分之二 */
+        }
+        #clickable1-bottom-center {
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%; /* 宽度的五分之一 */
+            height: 12%; /* 根据高度调整为合适比例 */
+        }
+        /* 第二张图片的点击区域样式 */
+        #clickable2-top-center {
+            top: 20%; /* 上边界偏上 */
+            left: 0;
+            width: 100%;
+            height: 22%;
+        }
+        #clickable2-bottom-center {
+            top: 44%; /* 中间偏下 */
+            left: 0;
+            width: 100%;
+            height: 40%;
+        }
+        /* 第三张图片的点击区域样式 */
+        #clickable3-top-left {
+            top: 0;
+            left: 0;
+            width: 40%;
+            height: 20%;
+        }
+        /* 第四张图片的点击区域样式 */
+        #clickable4-top-left {
+            top: 0;
+            left: 0;
+            width: 40%;
+            height: 20%;
+        }
+        #clickable4-center {
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 15%;
+        }
+        /* 进度条样式 */
+        .progress-bar {
+            width: 100%;
+            background-color: #f3f3f3;
+            margin-top: 20px;
+            height: 2px; /* 调整为更细的线 */
+            display: none;
+            position: fixed; /* 固定在页面底部 */
+            bottom: 0;
+            left: 0;
+        }
+        .progress {
+            width: 0;
+            height: 100%;
+            background-color: #0000cc; /* 更深蓝色进度条 */
+        }
+    </style>
+</head>
+<body>
+    <div class="image-container">
+        <!-- 图片1 -->
+        <img id="image1" class="image" src="image1.jpg" style="display: block;">
+        <div id="clickable1-top-left" class="clickable-area" onclick="startLoading(2)"></div>
+        <div id="clickable1-bottom-center" class="clickable-area" onclick="startLoading(3)"></div>
+        
+        <!-- 图片2 -->
+        <img id="image2" class="image" src="image2.jpg">
+        <div id="clickable2-top-center" class="clickable-area" onclick="startLoading(1)"></div>
+        <div id="clickable2-bottom-center" class="clickable-area" onclick="startLoading(4)"></div>
+        
+        <!-- 图片3 -->
+        <img id="image3" class="image" src="image3.jpg">
+        <div id="clickable3-top-left" class="clickable-area" onclick="startLoading(1)"></div>
+
+        <!-- 图片4 -->
+        <img id="image4" class="image" src="image4.jpg">
+        <div id="clickable4-top-left" class="clickable-area" onclick="startLoading(2)"></div>
+        <div id="clickable4-center" class="clickable-area" onclick="startLoading(3)"></div>
+    </div>
+
+    <!-- 进度条 -->
+    <div class="progress-bar" id="progress-bar">
+        <div class="progress" id="progress"></div>
+    </div>
+
+    <script>
+        function startLoading(targetImage) {
+            // 显示进度条
+            var progressBar = document.getElementById('progress-bar');
+            var progress = document.getElementById('progress');
+            progressBar.style.display = 'block';
+            progress.style.width = '0%';
+
+            // 动画加载进度条
+            var width = 0;
+            var interval = setInterval(frame, 20); // 20ms间隔
+            var totalDuration = 2000; // 总时间 2 秒
+            var stepTime = totalDuration / 100; // 每步的时间
+
+            function frame() {
+                if (width >= 100) {
+                    clearInterval(interval);
+                    // 隐藏进度条并显示目标图片
+                    progressBar.style.display = 'none';
+                    showImage(targetImage);
+                } else {
+                    width++;
+                    progress.style.width = width + '%';
+                }
+            }
+
+            // 使进度条在 2 秒内完成加载
+            setTimeout(function() {
+                clearInterval(interval);
+                progress.style.width = '100%';
+                setTimeout(function() {
+                    progressBar.style.display = 'none';
+                    showImage(targetImage);
+                }, stepTime);
+            }, totalDuration);
+        }
+
+        function showImage(imageNumber) {
+            // 隐藏所有图片
+            document.getElementById('image1').style.display = 'none';
+            document.getElementById('image2').style.display = 'none';
+            document.getElementById('image3').style.display = 'none';
+            document.getElementById('image4').style.display = 'none';
+
+            // 显示对应的图片
+            document.getElementById('image' + imageNumber).style.display = 'block';
+
+            // 隐藏所有点击区域
+            document.getElementById('clickable1-top-left').style.display = 'none';
+            document.getElementById('clickable1-bottom-center').style.display = 'none';
+            document.getElementById('clickable2-top-center').style.display = 'none';
+            document.getElementById('clickable2-bottom-center').style.display = 'none';
+            document.getElementById('clickable3-top-left').style.display = 'none';
+            document.getElementById('clickable4-top-left').style.display = 'none';
+            document.getElementById('clickable4-center').style.display = 'none';
+
+            // 根据显示的图片调整点击区域
+            if (imageNumber === 1) {
+                document.getElementById('clickable1-top-left').style.display = 'block';
+                document.getElementById('clickable1-bottom-center').style.display = 'block';
+            } else if (imageNumber === 2) {
+                document.getElementById('clickable2-top-center').style.display = 'block';
+                document.getElementById('clickable2-bottom-center').style.display = 'block';
+            } else if (imageNumber === 3) {
+                document.getElementById('clickable3-top-left').style.display = 'block';
+            } else if (imageNumber === 4) {
+                document.getElementById('clickable4-top-left').style.display = 'block';
+                document.getElementById('clickable4-center').style.display = 'block';
+            }
+        }
+
+        // 初始化显示图片1
+        showImage(1);
+    </script>
+</body>
+</html>
